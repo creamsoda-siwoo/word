@@ -374,83 +374,195 @@
     function InputPhase({ className, words, updateWords, onStartMemorize, onStartQuiz, onBack }) {
       const [word, setWord] = useState('');
       const [meaning, setMeaning] = useState('');
+      const [definition, setDefinition] = useState(''); // New: English Definition
+      const [editingIndex, setEditingIndex] = useState(null); // New: Edit Mode
+
+      const [showBulk, setShowBulk] = useState(false);
+      const [bulkText, setBulkText] = useState('');
+
       const meaningInputRef = useRef(null);
+      const definitionInputRef = useRef(null);
       const wordInputRef = useRef(null);
 
-      const addWord = () => {
+      const addOrUpdateWord = () => {
         if (word.trim() && meaning.trim()) {
-          updateWords([...words, { word: word.trim(), meaning: meaning.trim() }]);
+          const newWordObj = {
+            word: word.trim(),
+            meaning: meaning.trim(),
+            definition: definition.trim()
+          };
+
+          if (editingIndex !== null) {
+            // Update existing
+            const newWords = [...words];
+            newWords[editingIndex] = newWordObj;
+            updateWords(newWords);
+            setEditingIndex(null);
+          } else {
+            // Add new
+            updateWords([...words, newWordObj]);
+          }
+
+          // Reset fields
           setWord('');
           setMeaning('');
+          setDefinition('');
           wordInputRef.current.focus();
         }
       };
 
+      const editWord = (index) => {
+        const item = words[index];
+        setWord(item.word);
+        setMeaning(item.meaning);
+        setDefinition(item.definition || '');
+        setEditingIndex(index);
+        wordInputRef.current.focus();
+      };
+
       const deleteWord = (index) => {
-        const newWords = [...words];
-        newWords.splice(index, 1);
-        updateWords(newWords);
+        if (confirm("정말 삭제하시겠습니까?")) {
+          const newWords = [...words];
+          newWords.splice(index, 1);
+          updateWords(newWords);
+          if (editingIndex === index) {
+            setEditingIndex(null);
+            setWord(''); setMeaning(''); setDefinition('');
+          }
+        }
       };
 
-      const handleWordEnter = (e) => {
-        if (e.key === 'Enter') meaningInputRef.current.focus();
-      };
-
-      const handleMeaningEnter = (e) => {
-        if (e.key === 'Enter') addWord();
+      const handleBulkAdd = () => {
+        if (!bulkText.trim()) return;
+        const lines = bulkText.trim().split('\n');
+        const newWords = [];
+        lines.forEach(line => {
+          // Format: Word|Meaning|Definition (Definition optional)
+          const parts = line.split('|');
+          if (parts.length >= 2) {
+            newWords.push({
+              word: parts[0].trim(),
+              meaning: parts[1].trim(),
+              definition: parts[2] ? parts[2].trim() : ''
+            });
+          }
+        });
+        updateWords([...words, ...newWords]);
+        setBulkText('');
+        setShowBulk(false);
+        alert(`${newWords.length}개의 단어가 추가되었습니다.`);
       };
 
       return (
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <button onClick={onBack} style={{ background: 'none', border: 'none', color: '#6b7280', display: 'flex', alignItems: 'center', padding: 0 }}>
+            <button onClick={onBack} style={{ background: 'none', border: 'none', color: '#6b7280', display: 'flex', alignItems: 'center', padding: 0, cursor: 'pointer' }}>
               ← 클래스 선택
             </button>
             <h2 style={{ margin: 0, color: '#4f46e5' }}>{className}</h2>
-            <div style={{ width: '80px' }}></div> {/* Spacer */}
+            <div style={{ width: '80px' }}></div>
           </div>
 
-          <input
-            type="text"
-            placeholder="단어"
-            value={word}
-            onChange={(e) => setWord(e.target.value)}
-            onKeyPress={handleWordEnter}
-            ref={wordInputRef}
-          />
-          <input
-            type="text"
-            placeholder="뜻"
-            value={meaning}
-            onChange={(e) => setMeaning(e.target.value)}
-            onKeyPress={handleMeaningEnter}
-            ref={meaningInputRef}
-          />
-          <button className="btn btn-outline" onClick={addWord}>추가하기</button>
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+            <button className="btn btn-outline" onClick={() => setShowBulk(!showBulk)} style={{ fontSize: '0.9rem', padding: '8px 12px' }}>
+              {showBulk ? '닫기' : '📋 대량 등록'}
+            </button>
+          </div>
 
-          <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0', textAlign: 'left', maxHeight: '200px', overflowY: 'auto' }}>
+          {showBulk && (
+            <div style={{ marginBottom: '20px', padding: '15px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+              <p style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#6b7280' }}>
+                <strong>형식:</strong> 단어|뜻|영영풀이(선택)<br />
+                예: Apple|사과|A red fruit<br />
+                (줄바꿈으로 여러 개 입력 가능)
+              </p>
+              <textarea
+                style={{ width: '100%', height: '100px', padding: '10px', borderRadius: '8px', borderColor: '#e5e7eb', marginBottom: '10px' }}
+                value={bulkText}
+                onChange={(e) => setBulkText(e.target.value)}
+                placeholder="여기에 붙여넣으세요..."
+              ></textarea>
+              <button className="btn" onClick={handleBulkAdd}>일괄 등록하기</button>
+            </div>
+          )}
+
+          <div className={`input-group ${editingIndex !== null ? 'editing' : ''}`} style={{ padding: '15px', background: editingIndex !== null ? '#eff6ff' : 'transparent', borderRadius: '12px', marginBottom: '20px', border: editingIndex !== null ? '1px solid #bfdbfe' : 'none' }}>
+            {editingIndex !== null && <div style={{ color: '#2563eb', marginBottom: '10px', fontWeight: 'bold' }}>✏️ 단어 수정 중... <button style={{ marginLeft: '10px', border: 'none', background: 'none', color: '#6b7280', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => { setEditingIndex(null); setWord(''); setMeaning(''); setDefinition(''); }}>취소</button></div>}
+
+            <input
+              type="text"
+              placeholder="단어 (예: Apple)"
+              value={word}
+              onChange={(e) => setWord(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && meaningInputRef.current.focus()}
+              ref={wordInputRef}
+            />
+            <input
+              type="text"
+              placeholder="뜻 (예: 사과)"
+              value={meaning}
+              onChange={(e) => setMeaning(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && definitionInputRef.current.focus()}
+              ref={meaningInputRef}
+            />
+            <input
+              type="text"
+              placeholder="영영 풀이 (선택사항)"
+              value={definition}
+              onChange={(e) => setDefinition(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addOrUpdateWord()}
+              ref={definitionInputRef}
+            />
+            <button className="btn" onClick={addOrUpdateWord} style={{ backgroundColor: editingIndex !== null ? '#2563eb' : 'var(--primary)' }}>
+              {editingIndex !== null ? '수정 완료' : '추가하기'}
+            </button>
+          </div>
+
+          <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0', textAlign: 'left', maxHeight: '300px', overflowY: 'auto' }}>
             {words.length === 0 ? (
-              <li style={{ color: '#9ca3af', textAlign: 'center' }}>아직 등록된 단어가 없습니다.</li>
+              <li style={{ color: '#9ca3af', textAlign: 'center', padding: '20px' }}>아직 등록된 단어가 없습니다.</li>
             ) : (
               words.map((item, idx) => (
-                <li key={idx} style={{ padding: '10px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <strong>{item.word}</strong> - {item.meaning}
+                <li key={idx} style={{
+                  padding: '12px',
+                  borderBottom: '1px solid #f3f4f6',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  background: editingIndex === idx ? '#eff6ff' : 'transparent'
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                      <strong style={{ fontSize: '1.1rem', color: 'var(--primary)' }}>{item.word}</strong>
+                      <span style={{ color: 'var(--text)' }}>{item.meaning}</span>
+                    </div>
+                    {item.definition && <div style={{ fontSize: '0.85rem', color: '#6b7280', marginTop: '4px' }}>📖 {item.definition}</div>}
                   </div>
-                  <button
-                    onClick={() => deleteWord(idx)}
-                    style={{ background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}
-                  >
-                    <Trash2 size={16} />
-                  </button>
+
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    <button
+                      onClick={() => editWord(idx)}
+                      style={{ background: '#f3f4f6', color: '#4b5563', border: 'none', borderRadius: '4px', padding: '6px', cursor: 'pointer' }}
+                      title="수정"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => deleteWord(idx)}
+                      style={{ background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '4px', padding: '6px', cursor: 'pointer' }}
+                      title="삭제"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </li>
               ))
             )}
           </ul>
 
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button className="btn" onClick={onStartMemorize} style={{ flex: 1 }}>TTS 암기</button>
-            <button className="btn" onClick={onStartQuiz} style={{ flex: 1, backgroundColor: '#10b981' }}>퀴즈 풀기</button>
+            <button className="btn" onClick={onStartMemorize} style={{ flex: 1 }}>🗣️ TTS 암기</button>
+            <button className="btn" onClick={onStartQuiz} style={{ flex: 1, backgroundColor: '#10b981' }}>📝 퀴즈 풀기</button>
           </div>
         </div>
       );
@@ -515,6 +627,10 @@
       const [options, setOptions] = useState([]);
       const [typingInput, setTypingInput] = useState('');
 
+      // Scramble State
+      const [scrambleLetters, setScrambleLetters] = useState([]); // Array of { id, char, isUsed }
+      const [scrambleAnswer, setScrambleAnswer] = useState([]); // Array of { id, char }
+
       const speak = (text) => {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
@@ -539,15 +655,29 @@
       const prepareQuestion = () => {
         setFeedback(null);
         setTypingInput('');
+        setScrambleLetters([]);
+        setScrambleAnswer([]);
+
         const current = queue[currentIndex];
 
         if (type === 'word-to-meaning' || type === 'listening-to-meaning') {
           speak(current.word);
         }
 
-        if (type !== 'typing') {
+        if (type === 'scramble') {
+          const letters = current.word.split('').map((char, i) => ({ id: i, char, isUsed: false }));
+          // Shuffle letters
+          for (let i = letters.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [letters[i], letters[j]] = [letters[j], letters[i]];
+          }
+          setScrambleLetters(letters);
+        } else if (type !== 'typing') {
+          // Multiple choice generation
           let distractors = words.filter(w => w.word !== current.word);
+          // For definition mode, filter distractors that have definitions if possible, but not strictly required
           distractors = distractors.sort(() => Math.random() - 0.5).slice(0, 3);
+
           let opts = [current, ...distractors];
           opts.sort(() => Math.random() - 0.5);
           setOptions(opts);
@@ -566,6 +696,34 @@
         if (feedback) return;
         const current = queue[currentIndex];
         const isCorrect = typingInput.trim().toLowerCase() === current.word.toLowerCase();
+        processAnswer(isCorrect, current);
+      };
+
+      // Scramble Handlers
+      const handleScrambleLetterClick = (letterObj) => {
+        if (feedback || letterObj.isUsed) return;
+
+        setScrambleAnswer([...scrambleAnswer, letterObj]);
+        setScrambleLetters(scrambleLetters.map(l => l.id === letterObj.id ? { ...l, isUsed: true } : l));
+
+        // Auto-check if full length
+        const current = queue[currentIndex];
+        if (scrambleAnswer.length + 1 === current.word.length) {
+          // Need to verify immediately after this render
+          // Just a small timeout or check logic
+          setTimeout(() => checkScrambleAnswer([...scrambleAnswer, letterObj], current), 100);
+        }
+      };
+
+      const handleScrambleUndo = (letterObj) => {
+        if (feedback) return;
+        setScrambleAnswer(scrambleAnswer.filter(l => l.id !== letterObj.id));
+        setScrambleLetters(scrambleLetters.map(l => l.id === letterObj.id ? { ...l, isUsed: false } : l));
+      };
+
+      const checkScrambleAnswer = (finalAnswer, current) => {
+        const answerWord = finalAnswer.map(l => l.char).join('');
+        const isCorrect = answerWord.toLowerCase() === current.word.toLowerCase();
         processAnswer(isCorrect, current);
       };
 
@@ -599,7 +757,9 @@
 
           <h2>
             {type === 'meaning-to-word' && `뜻: ${currentItem.meaning}`}
+            {type === 'definition-to-word' && (currentItem.definition ? `영영풀이: ${currentItem.definition}` : `뜻: ${currentItem.meaning} (영영풀이 없음)`)}
             {type === 'typing' && `뜻: ${currentItem.meaning}`}
+            {type === 'scramble' && `뜻: ${currentItem.meaning}`}
             {type === 'word-to-meaning' && `단어: ${currentItem.word}`}
             {type === 'listening-to-meaning' && (
               <span style={{ cursor: 'pointer' }} onClick={() => speak(currentItem.word)}>
@@ -609,7 +769,32 @@
             )}
           </h2>
 
-          {type === 'typing' ? (
+          {/* Scramble UI */}
+          {type === 'scramble' && (
+            <div>
+              <div style={{ minHeight: '60px', borderBottom: '2px solid #e5e7eb', marginBottom: '20px', display: 'flex', justifyContent: 'center', gap: '8px', padding: '10px', flexWrap: 'wrap' }}>
+                {scrambleAnswer.map((l, i) => (
+                  <button key={i} onClick={() => handleScrambleUndo(l)} className="btn" style={{ width: '40px', height: '40px', padding: 0, fontSize: '1.2rem', background: '#4f46e5', color: 'white' }}>{l.char}</button>
+                ))}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                {scrambleLetters.map((l, i) => (
+                  <button
+                    key={l.id}
+                    onClick={() => handleScrambleLetterClick(l)}
+                    className="btn btn-outline"
+                    disabled={l.isUsed}
+                    style={{ width: '40px', height: '40px', padding: 0, fontSize: '1.2rem', opacity: l.isUsed ? 0 : 1, transition: 'opacity 0.2s' }}
+                  >
+                    {l.char}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Typing UI */}
+          {type === 'typing' && (
             <form onSubmit={handleTypingSubmit}>
               <input
                 type="text"
@@ -620,11 +805,14 @@
               />
               <button type="submit" className="btn">제출</button>
             </form>
-          ) : (
+          )}
+
+          {/* Multiple Choice UI */}
+          {(type === 'meaning-to-word' || type === 'word-to-meaning' || type === 'listening-to-meaning' || type === 'definition-to-word') && (
             <div>
               {options.map((opt, idx) => (
                 <button key={idx} className="btn" style={{ backgroundColor: 'white', color: 'black', border: '1px solid #e5e7eb', marginBottom: '8px' }} onClick={() => handleOptionClick(opt)}>
-                  {type === 'meaning-to-word' ? opt.word : opt.meaning}
+                  {(type === 'meaning-to-word' || type === 'definition-to-word') ? opt.word : opt.meaning}
                 </button>
               ))}
             </div>
@@ -825,10 +1013,32 @@
           {phase === 'QUIZ_SELECT' && (
             <div>
               <h2>어떤 퀴즈를 풀까요?</h2>
-              <button className="btn" onClick={() => startQuiz('meaning-to-word')}>뜻 보고 단어 고르기 (기본)</button>
-              <button className="btn" onClick={() => startQuiz('word-to-meaning')}>단어 보고 뜻 고르기</button>
-              <button className="btn" onClick={() => startQuiz('listening-to-meaning')}>듣기 평가 (소리 듣고 뜻 고르기)</button>
-              <button className="btn" onClick={() => startQuiz('typing')}>단어 직접 쓰기</button>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
+                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => startQuiz('meaning-to-word')}>
+                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>📖</span>
+                  뜻 → 단어
+                </button>
+                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => startQuiz('word-to-meaning')}>
+                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>🗣️</span>
+                  단어 → 뜻
+                </button>
+                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#7c3aed' }} onClick={() => startQuiz('definition-to-word')}>
+                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>🇺🇸</span>
+                  영영 풀이 (Young-Young)
+                </button>
+                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#db2777' }} onClick={() => startQuiz('scramble')}>
+                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>🔠</span>
+                  스펠링 조합 (Scramble)
+                </button>
+                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#f59e0b' }} onClick={() => startQuiz('listening-to-meaning')}>
+                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>👂</span>
+                  듣기 평가
+                </button>
+                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#10b981' }} onClick={() => startQuiz('typing')}>
+                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>⌨️</span>
+                  스펠링 쓰기
+                </button>
+              </div>
               <button className="btn btn-outline" onClick={() => setPhase('INPUT')}>뒤로 가기</button>
             </div>
           )}
