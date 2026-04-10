@@ -17,211 +17,422 @@
   <script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js"></script>
 
   <style>
-    /* index.css */
+    /* --- Modern Typography --- */
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    /* --- Theme Variables --- */
     :root {
+      /* Light Theme (Default) */
+      --bg-color: #f8fafc;
+      --bg-gradient: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(255, 255, 255, 0.5);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
       --primary: #4f46e5;
       --primary-hover: #4338ca;
-      --bg: #f3f4f6;
-      --card-bg: #ffffff;
-      --text: #1f2937;
-      --text-light: #6b7280;
+      --primary-light: #e0e7ff;
+      --secondary: #8b5cf6;
       --success: #10b981;
+      --success-bg: #d1fae5;
       --error: #ef4444;
+      --error-bg: #fee2e2;
+      --warning: #f59e0b;
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    }
+
+    [data-theme="dark"] {
+      /* Dark Theme */
+      --bg-color: #0f172a;
+      --bg-gradient: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+      --card-bg: rgba(30, 41, 59, 0.75);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-light: #312e81;
+      --success-bg: #064e3b;
+      --error-bg: #7f1d1d;
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    }
+
+    /* --- Base Styles --- */
+    * {
+      box-sizing: border-box;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
 
     body {
-      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
+      font-family: 'Pretendard', 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      background-size: 200% 200%;
+      animation: gradientBG 15s ease infinite;
+      color: var(--text-main);
       margin: 0;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* App.css */
-    .container {
-      background-color: var(--card-bg);
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    @keyframes gradientBG {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* --- Layout & Cards --- */
+    .app-wrapper {
       width: 100%;
-      max-width: 500px;
-      padding: 30px;
-      text-align: center;
-      margin: 20px;
+      max-width: 600px;
+      padding: 20px;
+      animation: fadeIn 0.5s ease-out;
     }
 
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .container {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      box-shadow: var(--glass-shadow);
+      padding: 40px;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* --- Typography --- */
     h1 {
-      color: var(--primary);
-      margin-bottom: 20px;
-      font-size: 1.8rem;
+      color: var(--text-main);
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
 
     h2 {
-      font-size: 1.2rem;
-      color: var(--text-light);
-      margin-bottom: 20px;
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      font-weight: 500;
     }
 
+    /* --- Buttons --- */
     button {
+      font-family: 'Pretendard', 'Inter', sans-serif;
       cursor: pointer;
-      transition: all 0.2s;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 14px 24px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:active {
+      transform: scale(0.97);
     }
 
     .btn {
       background-color: var(--primary);
       color: white;
       border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
       width: 100%;
-      margin-top: 10px;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
     }
 
     .btn:hover {
       background-color: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px -3px rgba(79, 70, 229, 0.3);
     }
 
     .btn:disabled {
-      background-color: #9ca3af;
+      background-color: var(--text-muted);
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      opacity: 0.6;
     }
 
     .btn-outline {
       background-color: transparent;
       border: 2px solid var(--primary);
       color: var(--primary);
+      box-shadow: none;
     }
 
     .btn-outline:hover {
-      background-color: #eef2ff;
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
     }
 
-    input[type="text"] {
-      width: calc(100% - 24px);
-      padding: 12px;
-      margin-bottom: 12px;
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
+    /* --- Inputs --- */
+    input[type="text"],
+    textarea {
+      font-family: 'Pretendard', 'Inter', sans-serif;
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      background: var(--bg-color);
+      border: 2px solid var(--card-border);
+      color: var(--text-main);
+      border-radius: 12px;
       font-size: 1rem;
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus,
+    textarea:focus {
       border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
     }
 
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* --- Specific Components --- */
     .flashcard {
-      padding: 40px 20px;
-      background: #fdfdfd;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      margin-bottom: 20px;
+      padding: 50px 20px;
+      background: var(--bg-color);
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 24px;
+      box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.03);
     }
 
     .flashcard .word {
-      font-size: 2rem;
-      font-weight: bold;
-      color: var(--primary);
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-main);
       display: block;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      word-break: break-word;
     }
 
     .flashcard .meaning {
       font-size: 1.5rem;
-      color: var(--text);
+      color: var(--text-muted);
       display: block;
+      font-weight: 500;
     }
 
     .progress-container {
       width: 100%;
-      background-color: #e5e7eb;
+      background-color: var(--bg-color);
       border-radius: 999px;
-      height: 6px;
-      margin-bottom: 20px;
+      height: 8px;
+      margin-bottom: 30px;
       overflow: hidden;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 
     .progress-bar {
       height: 100%;
-      background-color: var(--primary);
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
       width: 0%;
-      transition: width 0.3s;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 999px;
     }
 
     .feedback {
-      margin-top: 15px;
-      font-weight: bold;
+      margin-top: 20px;
+      font-weight: 600;
       font-size: 1.1rem;
-      min-height: 1.5rem;
+      padding: 12px;
+      border-radius: 12px;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
 
     .feedback.correct {
       color: var(--success);
+      background-color: var(--success-bg);
+      border: 1px solid rgba(16, 185, 129, 0.2);
     }
 
     .feedback.wrong {
       color: var(--error);
+      background-color: var(--error-bg);
+      border: 1px solid rgba(239, 68, 68, 0.2);
     }
 
-    /* Class Selection Styles */
-    .class-list {
+    /* --- Lists --- */
+    .class-list,
+    .word-list {
       list-style: none;
       padding: 0;
-      margin: 20px 0;
-      max-height: 300px;
+      margin: 24px 0;
+      max-height: 400px;
       overflow-y: auto;
+      scroll-behavior: smooth;
     }
 
-    .class-item {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 10px;
+    /* Custom Scrollbar for better UI */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--text-muted);
+      border-radius: 4px;
+      opacity: 0.5;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+
+    .list-item {
+      background: var(--bg-color);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      transition: transform 0.1s, box-shadow 0.1s;
+      transition: all 0.2s ease;
     }
 
-    .class-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    .list-item:hover {
+      transform: translateX(4px);
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .list-item-info {
+      text-align: left;
+    }
+
+    .list-item-info strong {
+      display: block;
+      font-size: 1.1rem;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .list-item-info span {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Input Group Edit state */
+    .input-group {
+      padding: 20px;
+      background: var(--bg-color);
+      border-radius: 16px;
+      margin-bottom: 24px;
+      border: 1px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .input-group.editing {
+      background: var(--primary-light);
       border-color: var(--primary);
     }
 
-    .class-info strong {
-      display: block;
-      font-size: 1.1rem;
-      color: var(--text);
+    /* Theme Toggle Switch */
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--glass-shadow);
+      color: var(--text-main);
+      z-index: 100;
     }
 
-    .class-info span {
-      font-size: 0.9rem;
-      color: var(--text-light);
+    .theme-toggle:hover {
+      transform: scale(1.1);
+      color: var(--primary);
     }
 
-    /* Additional Utility for List */
-    ul::-webkit-scrollbar {
-      width: 6px;
+    /* Utility */
+    .flex-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    ul::-webkit-scrollbar-track {
-      background: #f1f1f1;
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    ul::-webkit-scrollbar-thumb {
-      background: #ccc;
-      border-radius: 3px;
+    .w-full {
+      width: 100%;
     }
 
-    ul::-webkit-scrollbar-thumb:hover {
-      background: #aaa;
+    .mt-4 {
+      margin-top: 16px;
+    }
+
+    .mb-4 {
+      margin-bottom: 16px;
+    }
+
+    .text-sm {
+      font-size: 0.875rem;
+    }
+
+    .text-muted {
+      color: var(--text-muted);
     }
   </style>
 </head>
@@ -233,6 +444,25 @@
     const { useState, useEffect, useRef } = React;
 
     // --- Icons ---
+    const Moon = ({ size = 24, color = "currentColor", ...props }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    );
+
+    const Sun = ({ size = 24, color = "currentColor", ...props }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+    );
 
     const UserCircle = ({ size = 24, color = "currentColor", ...props }) => (
       <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -275,6 +505,25 @@
       </svg>
     );
 
+    const Activity = ({ size = 24, color = "currentColor", ...props }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+      </svg>
+    );
+
+    const Star = ({ size = 24, color = "currentColor", filled = false, ...props }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={filled ? color : "none"} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+      </svg>
+    );
+
+    const Search = ({ size = 24, color = "currentColor", ...props }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    );
+
     // --- Components ---
 
     function Login({ onLogin }) {
@@ -288,26 +537,61 @@
       };
 
       return (
-        <div className="section">
-          <div style={{ marginBottom: '20px' }}>
-            <UserCircle size={64} color="#4f46e5" />
+        <div className="app-wrapper">
+          <div className="container">
+            <div style={{ marginBottom: '24px' }}>
+              <UserCircle size={80} color="var(--primary)" />
+            </div>
+            <h1>환영합니다! 이름을 입력해주세요</h1>
+            <h2 style={{ fontSize: '1rem', marginBottom: '32px' }}>나만의 영단어장을 만들고 퀴즈를 풀어보세요.</h2>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                placeholder="이름 (예: 홍길동)"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoFocus
+                style={{ textAlign: 'center', fontSize: '1.2rem', padding: '16px' }}
+              />
+              <button type="submit" className="btn" style={{ fontSize: '1.1rem', padding: '16px', marginTop: '8px' }}>시작하기</button>
+            </form>
           </div>
-          <h2>환영합니다! 이름을 입력해주세요.</h2>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="이름 (예: 길동이)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoFocus
-            />
-            <button type="submit" className="btn">시작하기</button>
-          </form>
         </div>
       );
     }
 
-    function ClassSelectionPhase({ classes, onCreateClass, onSelectClass }) {
+    function DashboardPhase({ user, classes, onNavigate }) {
+      const totalWords = classes.reduce((sum, cls) => sum + cls.words.length, 0);
+      const totalClasses = classes.length;
+
+      return (
+        <div className="app-wrapper">
+          <div className="container">
+            <div className="flex-between mb-4">
+              <h1>👋 안녕하세요, {user}님!</h1>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
+              <div style={{ background: 'var(--bg-color)', padding: '20px', borderRadius: '16px', border: '1px solid var(--card-border)' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '8px' }}>내 클래스</div>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--primary)' }}>{totalClasses}개</div>
+              </div>
+              <div style={{ background: 'var(--bg-color)', padding: '20px', borderRadius: '16px', border: '1px solid var(--card-border)' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '8px' }}>총 단어수</div>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--secondary)' }}>{totalWords}개</div>
+              </div>
+            </div>
+
+            <button className="btn w-full mb-4" onClick={() => onNavigate('CLASS_SELECT')} style={{ padding: '20px', fontSize: '1.1rem' }}>
+              <BookOpen size={20} />
+              학습 시작하기
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    function ClassSelectionPhase({ classes, onCreateClass, onSelectClass, onBack }) {
       const [isCreating, setIsCreating] = useState(false);
       const [newClassName, setNewClassName] = useState('');
 
@@ -322,51 +606,62 @@
 
       if (isCreating) {
         return (
-          <div>
-            <h2>새 클래스 만들기</h2>
-            <form onSubmit={handleCreate}>
-              <input
-                type="text"
-                placeholder="클래스 이름"
-                value={newClassName}
-                onChange={(e) => setNewClassName(e.target.value)}
-                autoFocus
-              />
-              <button type="submit" className="btn">클래스 생성</button>
-              <button type="button" className="btn btn-outline" onClick={() => setIsCreating(false)}>취소</button>
-            </form>
+          <div className="app-wrapper">
+            <div className="container">
+              <h1>새 클래스 만들기</h1>
+              <h2 className="mb-4">학습할 단어장의 이름을 지어주세요.</h2>
+              <form onSubmit={handleCreate}>
+                <input
+                  type="text"
+                  placeholder="클래스 이름 (예: 토익 필수 단어)"
+                  value={newClassName}
+                  onChange={(e) => setNewClassName(e.target.value)}
+                  autoFocus
+                />
+                <button type="submit" className="btn mb-4">만들기</button>
+                <button type="button" className="btn-outline w-full" onClick={() => setIsCreating(false)}>취소</button>
+              </form>
+            </div>
           </div>
         );
       }
 
       return (
-        <div>
-          <h2>학습할 클래스를 선택하거나 만드세요.</h2>
+        <div className="app-wrapper">
+          <div className="container">
+            <div className="flex-between mb-4">
+              <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', padding: 0, paddingRight: '10px' }}>
+                ← 뒤로
+              </button>
+              <h1 style={{ margin: 0, flex: 1 }}>클래스 선택</h1>
+              <div style={{ width: '40px' }}></div>
+            </div>
 
-          <button className="btn" onClick={() => setIsCreating(true)} style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <PlusCircle size={20} />
-            새 클래스 만들기
-          </button>
+            <button className="btn" onClick={() => setIsCreating(true)} style={{ marginBottom: '24px' }}>
+              <PlusCircle size={20} />
+              새 클래스 만들기
+            </button>
 
-          <div style={{ textAlign: 'left', marginBottom: '10px', color: '#6b7280', fontSize: '0.9rem' }}>내 클래스 목록 ({classes.length})</div>
+            <div style={{ textAlign: 'left', marginBottom: '12px', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: '500' }}>내 클래스 목록 ({classes.length})</div>
 
-          <ul className="class-list">
-            {classes.length === 0 ? (
-              <li style={{ textAlign: 'center', color: '#9ca3af', padding: '20px' }}>
-                생성된 클래스가 없습니다.<br />새로 만들어보세요!
-              </li>
-            ) : (
-              classes.map(cls => (
-                <li key={cls.id} className="class-item" onClick={() => onSelectClass(cls.id)}>
-                  <div className="class-info">
-                    <strong>{cls.name}</strong>
-                    <span>단어 {cls.words.length}개</span>
-                  </div>
-                  <BookOpen size={20} color="#4f46e5" />
+            <ul className="class-list">
+              {classes.length === 0 ? (
+                <li style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '40px 20px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px dashed var(--card-border)' }}>
+                  생성된 클래스가 없습니다.<br /><span style={{ marginTop: '8px', display: 'block' }}>새로 만들어보세요!</span>
                 </li>
-              ))
-            )}
-          </ul>
+              ) : (
+                classes.map(cls => (
+                  <li key={cls.id} className="list-item" onClick={() => onSelectClass(cls.id)}>
+                    <div className="list-item-info">
+                      <strong>{cls.name}</strong>
+                      <span>단어 {cls.words.length}개</span>
+                    </div>
+                    <BookOpen size={20} color="var(--primary)" />
+                  </li>
+                ))
+              )}
+            </ul>
+          </div>
         </div>
       );
     }
@@ -380,6 +675,9 @@
       const [showBulk, setShowBulk] = useState(false);
       const [bulkText, setBulkText] = useState('');
 
+      const [searchTerm, setSearchTerm] = useState('');
+      const [showOnlyBookmarked, setShowOnlyBookmarked] = useState(false);
+
       const meaningInputRef = useRef(null);
       const definitionInputRef = useRef(null);
       const wordInputRef = useRef(null);
@@ -387,9 +685,11 @@
       const addOrUpdateWord = () => {
         if (word.trim() && meaning.trim()) {
           const newWordObj = {
+            id: editingIndex !== null ? words[editingIndex].id : 'word_' + Date.now() + Math.random().toString(36).substr(2, 9),
             word: word.trim(),
             meaning: meaning.trim(),
-            definition: definition.trim()
+            definition: definition.trim(),
+            isBookmarked: editingIndex !== null ? words[editingIndex].isBookmarked || false : false
           };
 
           if (editingIndex !== null) {
@@ -432,6 +732,11 @@
         }
       };
 
+      const toggleBookmark = (id) => {
+        const newWords = words.map(w => w.id === id ? { ...w, isBookmarked: !w.isBookmarked } : w);
+        updateWords(newWords);
+      };
+
       const handleBulkAdd = () => {
         if (!bulkText.trim()) return;
         const lines = bulkText.trim().split('\n');
@@ -441,9 +746,11 @@
           const parts = line.split('|');
           if (parts.length >= 2) {
             newWords.push({
+              id: 'word_' + Date.now() + Math.random().toString(36).substr(2, 9),
               word: parts[0].trim(),
               meaning: parts[1].trim(),
-              definition: parts[2] ? parts[2].trim() : ''
+              definition: parts[2] ? parts[2].trim() : '',
+              isBookmarked: false
             });
           }
         });
@@ -453,31 +760,47 @@
         alert(`${newWords.length}개의 단어가 추가되었습니다.`);
       };
 
+      const filteredWords = words.filter(w => {
+        const matchesSearch = w.word.toLowerCase().includes(searchTerm.toLowerCase()) || w.meaning.includes(searchTerm);
+        const matchesBookmark = showOnlyBookmarked ? w.isBookmarked : true;
+        return matchesSearch && matchesBookmark;
+      });
+
       return (
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <button onClick={onBack} style={{ background: 'none', border: 'none', color: '#6b7280', display: 'flex', alignItems: 'center', padding: 0, cursor: 'pointer' }}>
-              ← 클래스 선택
+          <div className="flex-between mb-4">
+            <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', padding: 0, cursor: 'pointer', paddingRight: '10px' }}>
+              ← 뒤로
             </button>
-            <h2 style={{ margin: 0, color: '#4f46e5' }}>{className}</h2>
-            <div style={{ width: '80px' }}></div>
+            <h1 style={{ margin: 0, fontSize: '1.5rem', flex: 1 }}>{className}</h1>
+            <div style={{ width: '40px' }}></div>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-            <button className="btn btn-outline" onClick={() => setShowBulk(!showBulk)} style={{ fontSize: '0.9rem', padding: '8px 12px' }}>
+          <div className="flex-row mb-4" style={{ justifyContent: 'space-between' }}>
+            <button className="btn-outline" onClick={() => setShowBulk(!showBulk)} style={{ fontSize: '0.9rem', padding: '8px 12px' }}>
               {showBulk ? '닫기' : '📋 대량 등록'}
             </button>
+            <div className="flex-row">
+              <button
+                className="btn-outline"
+                onClick={() => setShowOnlyBookmarked(!showOnlyBookmarked)}
+                style={{ fontSize: '0.9rem', padding: '8px 12px', background: showOnlyBookmarked ? 'var(--warning)' : 'transparent', color: showOnlyBookmarked ? '#fff' : 'var(--text-muted)', borderColor: showOnlyBookmarked ? 'var(--warning)' : 'var(--card-border)' }}
+              >
+                <Star size={16} filled={showOnlyBookmarked} color={showOnlyBookmarked ? "white" : "currentColor"} />
+                {showOnlyBookmarked ? '별표만 보는 중' : '전체보기'}
+              </button>
+            </div>
           </div>
 
           {showBulk && (
-            <div style={{ marginBottom: '20px', padding: '15px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-              <p style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#6b7280' }}>
+            <div style={{ marginBottom: '24px', padding: '20px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px solid var(--card-border)' }}>
+              <p style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: 'var(--text-muted)', textAlign: 'left' }}>
                 <strong>형식:</strong> 단어|뜻|영영풀이(선택)<br />
                 예: Apple|사과|A red fruit<br />
                 (줄바꿈으로 여러 개 입력 가능)
               </p>
               <textarea
-                style={{ width: '100%', height: '100px', padding: '10px', borderRadius: '8px', borderColor: '#e5e7eb', marginBottom: '10px' }}
+                style={{ height: '120px' }}
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
                 placeholder="여기에 붙여넣으세요..."
@@ -486,8 +809,8 @@
             </div>
           )}
 
-          <div className={`input-group ${editingIndex !== null ? 'editing' : ''}`} style={{ padding: '15px', background: editingIndex !== null ? '#eff6ff' : 'transparent', borderRadius: '12px', marginBottom: '20px', border: editingIndex !== null ? '1px solid #bfdbfe' : 'none' }}>
-            {editingIndex !== null && <div style={{ color: '#2563eb', marginBottom: '10px', fontWeight: 'bold' }}>✏️ 단어 수정 중... <button style={{ marginLeft: '10px', border: 'none', background: 'none', color: '#6b7280', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => { setEditingIndex(null); setWord(''); setMeaning(''); setDefinition(''); }}>취소</button></div>}
+          <div className={`input-group ${editingIndex !== null ? 'editing' : ''}`}>
+            {editingIndex !== null && <div style={{ color: 'var(--primary)', marginBottom: '16px', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}><span>✏️ 단어 수정 중...</span> <button style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => { setEditingIndex(null); setWord(''); setMeaning(''); setDefinition(''); }}>취소</button></div>}
 
             <input
               type="text"
@@ -513,56 +836,81 @@
               onKeyPress={(e) => e.key === 'Enter' && addOrUpdateWord()}
               ref={definitionInputRef}
             />
-            <button className="btn" onClick={addOrUpdateWord} style={{ backgroundColor: editingIndex !== null ? '#2563eb' : 'var(--primary)' }}>
+            <button className="btn w-full" onClick={addOrUpdateWord}>
               {editingIndex !== null ? '수정 완료' : '추가하기'}
             </button>
           </div>
 
-          <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0', textAlign: 'left', maxHeight: '300px', overflowY: 'auto' }}>
-            {words.length === 0 ? (
-              <li style={{ color: '#9ca3af', textAlign: 'center', padding: '20px' }}>아직 등록된 단어가 없습니다.</li>
-            ) : (
-              words.map((item, idx) => (
-                <li key={idx} style={{
-                  padding: '12px',
-                  borderBottom: '1px solid #f3f4f6',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  background: editingIndex === idx ? '#eff6ff' : 'transparent'
-                }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                      <strong style={{ fontSize: '1.1rem', color: 'var(--primary)' }}>{item.word}</strong>
-                      <span style={{ color: 'var(--text)' }}>{item.meaning}</span>
-                    </div>
-                    {item.definition && <div style={{ fontSize: '0.85rem', color: '#6b7280', marginTop: '4px' }}>📖 {item.definition}</div>}
-                  </div>
+          <div style={{ position: 'relative', marginBottom: '16px' }}>
+            <div style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-muted)' }}>
+              <Search size={18} />
+            </div>
+            <input
+              type="text"
+              placeholder="단어 검색..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ paddingLeft: '40px', marginBottom: '0' }}
+            />
+          </div>
 
-                  <div style={{ display: 'flex', gap: '5px' }}>
-                    <button
-                      onClick={() => editWord(idx)}
-                      style={{ background: '#f3f4f6', color: '#4b5563', border: 'none', borderRadius: '4px', padding: '6px', cursor: 'pointer' }}
-                      title="수정"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      onClick={() => deleteWord(idx)}
-                      style={{ background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '4px', padding: '6px', cursor: 'pointer' }}
-                      title="삭제"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </li>
-              ))
+          <div style={{ textAlign: 'left', marginBottom: '12px', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: '500' }}>단어 목록 ({filteredWords.length} / {words.length})</div>
+
+          <ul className="word-list">
+            {filteredWords.length === 0 ? (
+              <li style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px 20px', background: 'var(--bg-color)', borderRadius: '16px', border: '1px dashed var(--card-border)' }}>
+                {searchTerm || showOnlyBookmarked ? '검색 결과가 없습니다.' : '아직 등록된 단어가 없습니다.'}
+              </li>
+            ) : (
+              filteredWords.map((item, idx) => {
+                const globalIndex = words.findIndex(w => w.id === item.id);
+                return (
+                  <li key={item.id || idx} className="list-item" style={{ background: editingIndex === globalIndex ? 'var(--primary-light)' : 'var(--bg-color)', borderColor: editingIndex === globalIndex ? 'var(--primary)' : 'var(--card-border)' }}>
+                    <div style={{ flex: 1, textAlign: 'left' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleBookmark(item.id); }}
+                          style={{ background: 'none', border: 'none', padding: '0', cursor: 'pointer', color: item.isBookmarked ? 'var(--warning)' : 'var(--text-muted)' }}
+                        >
+                          <Star size={18} filled={item.isBookmarked} />
+                        </button>
+                        <strong style={{ fontSize: '1.2rem', color: 'var(--primary)' }}>{item.word}</strong>
+                        <span style={{ color: 'var(--text-main)', fontWeight: '500' }}>{item.meaning}</span>
+                      </div>
+                      {item.definition && <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '6px', paddingLeft: '26px' }}>📖 {item.definition}</div>}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        onClick={() => editWord(globalIndex)}
+                        style={{ background: 'var(--bg-color)', color: 'var(--text-muted)', border: '1px solid var(--card-border)', borderRadius: '8px', padding: '8px', cursor: 'pointer' }}
+                        title="수정"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => deleteWord(globalIndex)}
+                        style={{ background: 'var(--error-bg)', color: 'var(--error)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '8px', padding: '8px', cursor: 'pointer' }}
+                        title="삭제"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </li>
+                );
+              })
             )}
           </ul>
 
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button className="btn" onClick={onStartMemorize} style={{ flex: 1 }}>🗣️ TTS 암기</button>
-            <button className="btn" onClick={onStartQuiz} style={{ flex: 1, backgroundColor: '#10b981' }}>📝 퀴즈 풀기</button>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <button className="btn" onClick={onStartMemorize} style={{ background: 'var(--secondary)' }}>
+              <Volume2 size={20} />
+              TTS 암기
+            </button>
+            <button className="btn" onClick={onStartQuiz} style={{ background: 'var(--success)' }}>
+              <Activity size={20} />
+              퀴즈 풀기
+            </button>
           </div>
         </div>
       );
@@ -618,7 +966,7 @@
       );
     }
 
-    function QuizPhase({ words, type, onComplete, onBack }) {
+    function QuizPhase({ words, type, mode = 'normal', onComplete, onBack }) {
       const [queue, setQueue] = useState([]);
       const [currentIndex, setCurrentIndex] = useState(0);
       const [score, setScore] = useState(0);
@@ -631,6 +979,42 @@
       const [scrambleLetters, setScrambleLetters] = useState([]); // Array of { id, char, isUsed }
       const [scrambleAnswer, setScrambleAnswer] = useState([]); // Array of { id, char }
 
+      // Mode States
+      const [timeLeft, setTimeLeft] = useState(mode === 'time-attack' ? 60 : null);
+      const [lives, setLives] = useState(mode === 'survival' ? 3 : null);
+
+      // Audio Context
+      const playSound = (type) => {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          const ctx = new AudioContext();
+          const osc = ctx.createOscillator();
+          const gainNode = ctx.createGain();
+
+          osc.connect(gainNode);
+          gainNode.connect(ctx.destination);
+
+          if (type === 'correct') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1); // A5
+            gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.3);
+          } else if (type === 'wrong') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.2);
+            gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.2);
+          }
+        } catch (e) { console.log('Audio not supported', e); }
+      };
+
       const speak = (text) => {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
@@ -640,14 +1024,34 @@
       };
 
       useEffect(() => {
-        const shuffled = [...words].sort(() => Math.random() - 0.5);
-        setQueue(shuffled);
+        // Time Attack: duplicate queue to allow endless questions within time limit
+        let initialQueue = [...words].sort(() => Math.random() - 0.5);
+        if (mode === 'time-attack') {
+          initialQueue = [...initialQueue, ...initialQueue, ...initialQueue]; // Just make it long enough
+        }
+        setQueue(initialQueue);
       }, []);
+
+      useEffect(() => {
+        let timer;
+        if (mode === 'time-attack' && timeLeft > 0) {
+          timer = setTimeout(() => setTimeLeft(t => t - 1), 1000);
+        } else if (mode === 'time-attack' && timeLeft === 0) {
+          onComplete(score, wrongAnswers, score + wrongAnswers.length);
+        }
+        return () => clearTimeout(timer);
+      }, [timeLeft, mode]);
+
+      useEffect(() => {
+        if (mode === 'survival' && lives === 0) {
+          onComplete(score, wrongAnswers, score + wrongAnswers.length);
+        }
+      }, [lives, mode]);
 
       useEffect(() => {
         if (queue.length > 0 && currentIndex < queue.length) {
           prepareQuestion();
-        } else if (queue.length > 0 && currentIndex >= queue.length) {
+        } else if (queue.length > 0 && currentIndex >= queue.length && mode !== 'time-attack') {
           onComplete(score, wrongAnswers, queue.length);
         }
       }, [queue, currentIndex]);
@@ -729,30 +1133,55 @@
 
       const processAnswer = (isCorrect, item) => {
         if (isCorrect) {
+          playSound('correct');
           setScore(s => s + 1);
           setFeedback({ text: '⭕ 정답입니다!', type: 'correct' });
-          speak("Correct");
         } else {
-          setWrongAnswers(w => [...w, item]);
+          playSound('wrong');
+
+          // Only add to wrong answers if it isn't already there (for time attack/survival where dupes happen)
+          setWrongAnswers(w => {
+            if (!w.find(x => x.word === item.word)) return [...w, item];
+            return w;
+          });
+
+          if (mode === 'survival') setLives(l => l - 1);
           setFeedback({ text: `❌ 틀렸습니다. 정답은 '${item.word}' 입니다.`, type: 'wrong' });
-          speak(`Wrong. The answer is ${item.word}`);
         }
 
         setTimeout(() => {
+          if (mode === 'time-attack') {
+            // For time attack, don't auto-stop at queue length if we still have time
+            if (currentIndex + 1 >= queue.length) {
+              setQueue([...queue, ...words.sort(() => Math.random() - 0.5)]);
+            }
+          }
           setCurrentIndex(c => c + 1);
-        }, 1500);
+        }, isCorrect && mode === 'time-attack' ? 500 : 1500); // Faster next question on correct time-attack
       };
 
       if (queue.length === 0) return <div>Loading...</div>;
-      if (currentIndex >= queue.length) return <div>Calculating...</div>;
+      if (currentIndex >= queue.length && mode !== 'time-attack') return <div>Calculating...</div>;
 
       const currentItem = queue[currentIndex];
-      const progress = ((currentIndex) / queue.length) * 100;
+      const progress = mode === 'time-attack'
+        ? (timeLeft / 60) * 100
+        : mode === 'survival'
+          ? (lives / 3) * 100
+          : ((currentIndex) / queue.length) * 100;
 
       return (
         <div>
+          <div className="flex-between mb-4">
+            {mode === 'time-attack' && <div style={{ fontWeight: 'bold', fontSize: '1.2rem', color: timeLeft <= 10 ? 'var(--error)' : 'var(--primary)' }}>⏱️ {timeLeft}초</div>}
+            {mode === 'survival' && <div style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--error)' }}>{Array(lives).fill('❤️').join('')}{Array(3 - lives).fill('🖤').join('')}</div>}
+            {(mode === 'normal' || !mode) && <div>문제 {currentIndex + 1}/{queue.length}</div>}
+
+            <div style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--success)' }}>점수: {score}</div>
+          </div>
+
           <div className="progress-container">
-            <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+            <div className="progress-bar" style={{ width: `${progress}%`, background: mode === 'survival' ? 'linear-gradient(90deg, #ef4444, #f87171)' : mode === 'time-attack' && timeLeft <= 10 ? 'var(--error)' : 'linear-gradient(90deg, var(--primary), var(--secondary))' }}></div>
           </div>
 
           <h2>
@@ -866,8 +1295,10 @@
 
     function App() {
       const [user, setUser] = useState(localStorage.getItem('word_app_user') || null);
-      // Phases: LOGIN, CLASS_SELECT, INPUT, MEMORIZE, QUIZ_SELECT, QUIZ, RESULT
-      const [phase, setPhase] = useState(user ? 'CLASS_SELECT' : 'LOGIN');
+      const [theme, setTheme] = useState(localStorage.getItem('word_app_theme') || 'light');
+
+      // Phases: LOGIN, DASHBOARD, CLASS_SELECT, INPUT, MEMORIZE, QUIZ_SELECT, QUIZ, RESULT
+      const [phase, setPhase] = useState(user ? 'DASHBOARD' : 'LOGIN');
 
       // Class System State
       const [classes, setClasses] = useState(() => {
@@ -900,6 +1331,7 @@
 
       // Quiz State
       const [quizType, setQuizType] = useState('meaning-to-word');
+      const [quizMode, setQuizMode] = useState('normal'); // 'normal', 'time-attack', 'survival'
       const [quizSubset, setQuizSubset] = useState(null);
       const [lastResult, setLastResult] = useState(null);
 
@@ -913,10 +1345,15 @@
         localStorage.setItem('word_app_classes', JSON.stringify(classes));
       }, [classes]);
 
+      useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('word_app_theme', theme);
+      }, [theme]);
+
       // Handlers
       const handleLogin = (name) => {
         setUser(name);
-        setPhase('CLASS_SELECT');
+        setPhase('DASHBOARD');
       };
 
       const handleLogout = () => {
@@ -925,6 +1362,10 @@
           setPhase('LOGIN');
           setCurrentClassId(null);
         }
+      };
+
+      const toggleTheme = () => {
+        setTheme(prev => prev === 'light' ? 'dark' : 'light');
       };
 
       // Class Handlers
@@ -972,97 +1413,145 @@
       };
 
       return (
-        <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <h1>🎓 영단어 마스터 {user && <span style={{ fontSize: '0.6em', color: '#6b7280' }}>by {user}</span>}</h1>
-            {user && <button onClick={handleLogout} style={{ fontSize: '0.8rem', padding: '5px 10px', background: '#ccc', border: 'none', borderRadius: '4px' }}>로그아웃</button>}
-          </div>
+        <>
+          <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle Theme">
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+
+          {user && phase !== 'LOGIN' && phase !== 'DASHBOARD' && (
+            <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 100 }}>
+              <button onClick={handleLogout} style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted)', fontSize: '0.8rem', padding: '8px 12px', borderRadius: '8px', boxShadow: 'var(--glass-shadow)' }}>
+                로그아웃
+              </button>
+            </div>
+          )}
 
           {phase === 'LOGIN' && <Login onLogin={handleLogin} />}
+
+          {phase === 'DASHBOARD' && user && (
+            <DashboardPhase
+              user={user}
+              classes={classes}
+              onNavigate={(p) => setPhase(p)}
+            />
+          )}
 
           {phase === 'CLASS_SELECT' && (
             <ClassSelectionPhase
               classes={classes}
               onCreateClass={handleCreateClass}
               onSelectClass={handleSelectClass}
+              onBack={() => setPhase('DASHBOARD')}
             />
           )}
 
           {phase === 'INPUT' && currentClass && (
-            <InputPhase
-              className={currentClass.name}
-              words={currentWords}
-              updateWords={updateCurrentClassWords}
-              onStartMemorize={() => setPhase('MEMORIZE')}
-              onStartQuiz={() => setPhase('QUIZ_SELECT')}
-              onBack={() => {
-                setCurrentClassId(null);
-                setPhase('CLASS_SELECT');
-              }}
-            />
+            <div className="app-wrapper">
+              <div className="container">
+                <InputPhase
+                  className={currentClass.name}
+                  words={currentWords}
+                  updateWords={updateCurrentClassWords}
+                  onStartMemorize={() => setPhase('MEMORIZE')}
+                  onStartQuiz={() => setPhase('QUIZ_SELECT')}
+                  onBack={() => {
+                    setCurrentClassId(null);
+                    setPhase('CLASS_SELECT');
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           {phase === 'MEMORIZE' && (
-            <MemorizePhase
-              words={currentWords}
-              onFinish={() => setPhase('INPUT')}
-              onBack={() => setPhase('INPUT')}
-            />
+            <div className="app-wrapper">
+              <div className="container">
+                <MemorizePhase
+                  words={currentWords}
+                  onFinish={() => setPhase('INPUT')}
+                  onBack={() => setPhase('INPUT')}
+                />
+              </div>
+            </div>
           )}
 
           {phase === 'QUIZ_SELECT' && (
-            <div>
-              <h2>어떤 퀴즈를 풀까요?</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
-                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => startQuiz('meaning-to-word')}>
-                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>📖</span>
-                  뜻 → 단어
-                </button>
-                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => startQuiz('word-to-meaning')}>
-                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>🗣️</span>
-                  단어 → 뜻
-                </button>
-                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#7c3aed' }} onClick={() => startQuiz('definition-to-word')}>
-                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>🇺🇸</span>
-                  영영 풀이 (Young-Young)
-                </button>
-                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#db2777' }} onClick={() => startQuiz('scramble')}>
-                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>🔠</span>
-                  스펠링 조합 (Scramble)
-                </button>
-                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#f59e0b' }} onClick={() => startQuiz('listening-to-meaning')}>
-                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>👂</span>
-                  듣기 평가
-                </button>
-                <button className="btn" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#10b981' }} onClick={() => startQuiz('typing')}>
-                  <span style={{ fontSize: '1.5rem', marginBottom: '5px' }}>⌨️</span>
-                  스펠링 쓰기
-                </button>
+            <div className="app-wrapper">
+              <div className="container" style={{ padding: '30px 20px' }}>
+                <div className="flex-between mb-4">
+                  <h1 style={{ margin: 0, fontSize: '1.5rem' }}>퀴즈 설정</h1>
+                </div>
+
+                <div style={{ marginBottom: '24px', background: 'var(--bg-color)', padding: '16px', borderRadius: '16px', border: '1px solid var(--card-border)' }}>
+                  <h2 style={{ fontSize: '1rem', marginBottom: '16px', textAlign: 'left', color: 'var(--text-main)' }}>🚀 게임 모드</h2>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                    <button className="btn-outline" onClick={() => setQuizMode('normal')} style={{ background: quizMode === 'normal' ? 'var(--primary)' : 'transparent', color: quizMode === 'normal' ? 'white' : 'var(--primary)' }}>일반 모드</button>
+                    <button className="btn-outline" onClick={() => setQuizMode('time-attack')} style={{ background: quizMode === 'time-attack' ? 'var(--warning)' : 'transparent', color: quizMode === 'time-attack' ? 'white' : 'var(--warning)', borderColor: 'var(--warning)' }}>타임 어택 ⏱️</button>
+                    <button className="btn-outline" onClick={() => setQuizMode('survival')} style={{ background: quizMode === 'survival' ? 'var(--error)' : 'transparent', color: quizMode === 'survival' ? 'white' : 'var(--error)', borderColor: 'var(--error)' }}>서바이벌 ❤️</button>
+                  </div>
+                </div>
+
+                <h2 style={{ fontSize: '1rem', marginBottom: '16px', textAlign: 'left', color: 'var(--text-main)' }}>📚 문제 유형</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
+                  <button className="btn" style={{ margin: 0, height: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px' }} onClick={() => startQuiz('meaning-to-word')}>
+                    <span style={{ fontSize: '1.8rem', marginBottom: '4px' }}>📖</span>
+                    뜻 → 단어
+                  </button>
+                  <button className="btn" style={{ margin: 0, height: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px' }} onClick={() => startQuiz('word-to-meaning')}>
+                    <span style={{ fontSize: '1.8rem', marginBottom: '4px' }}>🗣️</span>
+                    단어 → 뜻
+                  </button>
+                  <button className="btn" style={{ margin: 0, height: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px', background: 'var(--secondary)' }} onClick={() => startQuiz('definition-to-word')}>
+                    <span style={{ fontSize: '1.8rem', marginBottom: '4px' }}>🇺🇸</span>
+                    영영 풀이
+                  </button>
+                  <button className="btn" style={{ margin: 0, height: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px', background: '#ec4899' }} onClick={() => startQuiz('scramble')}>
+                    <span style={{ fontSize: '1.8rem', marginBottom: '4px' }}>🔠</span>
+                    스펠링 조합
+                  </button>
+                  <button className="btn" style={{ margin: 0, height: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px', background: '#f59e0b' }} onClick={() => startQuiz('listening-to-meaning')}>
+                    <span style={{ fontSize: '1.8rem', marginBottom: '4px' }}>👂</span>
+                    듣기 평가
+                  </button>
+                  <button className="btn" style={{ margin: 0, height: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px', background: 'var(--success)' }} onClick={() => startQuiz('typing')}>
+                    <span style={{ fontSize: '1.8rem', marginBottom: '4px' }}>⌨️</span>
+                    스펠링 쓰기
+                  </button>
+                </div>
+                <button className="btn-outline w-full" onClick={() => setPhase('INPUT')}>뒤로 가기</button>
               </div>
-              <button className="btn btn-outline" onClick={() => setPhase('INPUT')}>뒤로 가기</button>
             </div>
           )}
 
           {phase === 'QUIZ' && (
-            <QuizPhase
-              words={quizSubset || currentWords}
-              type={quizType}
-              onComplete={handleQuizComplete}
-              onBack={() => setPhase('INPUT')}
-            />
+            <div className="app-wrapper">
+              <div className="container">
+                <QuizPhase
+                  words={quizSubset || currentWords}
+                  type={quizType}
+                  mode={quizMode}
+                  onComplete={handleQuizComplete}
+                  onBack={() => setPhase('INPUT')}
+                />
+              </div>
+            </div>
           )}
 
           {phase === 'RESULT' && lastResult && (
-            <ResultPhase
-              score={lastResult.score}
-              total={lastResult.total}
-              wrongAnswers={lastResult.wrongAnswers}
-              onRetryFull={() => startQuiz(quizType, quizSubset)}
-              onRetryWrong={() => startQuiz(quizType, lastResult.wrongAnswers)}
-              onHome={() => setPhase('INPUT')}
-            />
+            <div className="app-wrapper">
+              <div className="container" style={{ overflow: 'hidden' }}>
+                <ResultPhase
+                  score={lastResult.score}
+                  total={lastResult.total}
+                  wrongAnswers={lastResult.wrongAnswers}
+                  onRetryFull={() => startQuiz(quizType, quizSubset)}
+                  onRetryWrong={() => startQuiz(quizType, lastResult.wrongAnswers)}
+                  onHome={() => setPhase('INPUT')}
+                />
+              </div>
+            </div>
           )}
-        </div>
+        </>
       );
     }
 
